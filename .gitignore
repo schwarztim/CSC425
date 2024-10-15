@@ -1,0 +1,33 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Docker
+*.bak
+
+# Logs
+*.log
+*.out
+*.err
+
+# Cache
+.cache/
+*.egg-info/
+.eggs/
+
+# Flask specific
+instance/
+*.sqlite3
+*.db
+
+# Terraform state and backup files
+terraform.tfstate
+terraform.tfstate.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore backup files
+*.bak

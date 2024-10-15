@@ -26,4 +26,5 @@ EXPOSE 5000
 ENV DATABASE_URL=postgresql://user:password@postgres:5432/hair_salon
 
 # Run the Flask application with wait-for-it to ensure the PostgreSQL service is available
-CMD ["wait-for-it.sh", "postgres:5432", "--", "python", "app.py"]
+CMD ["wait-for-it.sh", "postgres:5432", "--timeout=30", "--", "python", "app.py"]
+

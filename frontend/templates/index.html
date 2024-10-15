@@ -5,12 +5,11 @@
     <script>
         // Function to disable Sundays and Mondays
         function disableDays(date) {
-            const day = date.getDay();
-            // Disable Sunday (0) and Monday (1)
-            return (day === 0 || day === 1);
+            const day = date.getUTCDay();  // Use UTC day to avoid timezone issues
+            return (day === 0 || day === 1);  // Disable Sunday (0) and Monday (1)
         }
 
-        // Function to set available time slots (10 AM to 6 PM)
+        // Function to set available time slots (10 AM to 6 PM in 30-minute increments)
         function setAvailableTimes() {
             const timeSelect = document.getElementById("time");
             timeSelect.innerHTML = ""; // Clear existing options
@@ -18,28 +17,35 @@
             const startHour = 10;
             const endHour = 18;
 
+            // Generate 30-minute time slots
             for (let hour = startHour; hour <= endHour; hour++) {
-                const timeOption = document.createElement("option");
-                const timeString = `${hour.toString().padStart(2, '0')}:00`;
-                timeOption.value = timeString;
-                timeOption.text = timeString;
-                timeSelect.appendChild(timeOption);
+                ['00', '30'].forEach(minute => {
+                    const timeOption = document.createElement("option");
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minute}`;
+                    timeOption.value = timeString;
+                    timeOption.text = timeString;
+                    timeSelect.appendChild(timeOption);
+                });
             }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
             const dateInput = document.getElementById('date');
-            const today = new Date().toISOString().split('T')[0]; // Current date
+            const today = new Date().toISOString().split('T')[0]; // Get today's date
 
             dateInput.min = today; // Prevent past dates
             setAvailableTimes();
 
-            // Filter out Sundays and Mondays
+            // Filter out Sundays and Mondays, allow today's date if it's a valid day
             dateInput.addEventListener('input', function () {
                 const selectedDate = new Date(dateInput.value);
-                if (disableDays(selectedDate)) {
+                const day = selectedDate.getUTCDay();
+                if (day === 0 || day === 1) { // Sunday or Monday
                     alert('Bookings are only allowed Tuesday to Saturday.');
                     dateInput.value = ""; // Reset the value
+                } else {
+                    // Refresh available times for the selected date
+                    fetchTimes();
                 }
             });
 
@@ -48,14 +54,27 @@
                 event.preventDefault();
                 const selectedDate = document.getElementById('date').value;
                 const selectedTime = document.getElementById('time').value;
+                const name = document.getElementById('name').value;
+                const phoneNumber = document.getElementById('phone').value;
                 const timeSlot = `${selectedDate} ${selectedTime}`;
 
+                // Validate inputs
+                if (!name || !phoneNumber || !selectedTime || !selectedDate) {
+                    alert('Time slot, name, and phone number are required.');
+                    return;
+                }
+
+                // Send booking data to the backend
                 fetch('/book', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ time: timeSlot })
+                    body: JSON.stringify({
+                        time: timeSlot,
+                        name: name,
+                        phone_number: phoneNumber
+                    })
                 }).then(response => response.json()).then(data => {
                     alert(data.message || data.error);
                     if (data.message) {
@@ -70,16 +89,22 @@
 
         // Fetch times that are already booked and disable them
         function fetchTimes() {
-            fetch('/times')
+            const selectedDate = document.getElementById('date').value;
+            if (!selectedDate) return; // Ensure a date is selected
+
+            fetch(`/times?date=${selectedDate}`)
                 .then(response => response.json())
                 .then(bookedTimes => {
                     const timeSelect = document.getElementById("time");
                     const options = timeSelect.options;
 
                     for (let i = 0; i < options.length; i++) {
-                        const optionTime = `${document.getElementById('date').value} ${options[i].value}`;
+                        const optionTime = `${selectedDate} ${options[i].value}`;
                         options[i].disabled = bookedTimes.includes(optionTime);
                     }
+                })
+                .catch(error => {
+                    console.error('Error fetching booked times:', error);
                 });
         }
     </script>

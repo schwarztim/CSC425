@@ -10,7 +10,7 @@ app = Flask(__name__)
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Ensure DATABASE_URL is set
+# Use the correct DATABASE_URL from environment (should be automatically set by docker-compose)
 DATABASE_URL = os.getenv('DATABASE_URL')
 if not DATABASE_URL:
     logging.error("DATABASE_URL is not set.")
@@ -30,9 +30,9 @@ except Exception as e:
 def is_valid_time_slot(time_str):
     try:
         time_obj = datetime.strptime(time_str, "%Y-%m-%d %H:%M")
-        if time_obj.weekday() in [0, 1]:  # Monday (0) and Sunday (1) not allowed
+        if time_obj.weekday() in [0, 6]:  # Monday (0) and Sunday (6) not allowed
             return False
-        if time_obj.hour < 10 or time_obj.hour > 18:  # Outside 10 AM to 6 PM
+        if time_obj.hour < 10 or time_obj.hour >= 18:  # Outside 10 AM to 6 PM
             return False
         return True
     except ValueError:
@@ -59,12 +59,17 @@ def book_time():
     time_slot = request.json.get("time")
     name = request.json.get("name")
     phone_number = request.json.get("phone_number")
-    
+
+    # Debug logging for request payload
+    logging.debug(f"Received booking request: time_slot={time_slot}, name={name}, phone_number={phone_number}")
+
     if not time_slot or not name or not phone_number:
+        logging.debug("Missing parameters")
         return jsonify({"error": "Time slot, name, and phone number are required."}), 400
 
     # Validate the time slot format and rules
     if not is_valid_time_slot(time_slot):
+        logging.debug("Invalid time slot")
         return jsonify({"error": "Invalid time slot. Bookings are allowed only between 10 AM to 6 PM, Tuesday through Saturday."}), 400
 
     try:
@@ -75,6 +80,7 @@ def book_time():
         cur.execute("SELECT COUNT(*) FROM bookings WHERE time_slot = %s", (time_slot,))
         count = cur.fetchone()[0]
         if count > 0:
+            logging.debug("Time slot already booked")
             return jsonify({"error": "Time slot already booked"}), 400
 
         # Book the time slot with name and phone number
@@ -85,7 +91,7 @@ def book_time():
         connection_pool.putconn(conn)
         return jsonify({"message": "Time slot booked successfully!"})
     except psycopg2.IntegrityError:
-        logging.error("Time slot already booked")
+        logging.error("IntegrityError: Time slot already booked")
         return jsonify({"error": "Time slot already booked"}), 400
     except Exception as e:
         logging.error(f"Error booking time slot: {e}")

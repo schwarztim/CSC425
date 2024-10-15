@@ -22,4 +22,4 @@ COPY . /app
 EXPOSE 8000
 
 # Run the Flask application with wait-for-it
-CMD ["wait-for-it.sh", "backend:5000", "--", "python", "app.py"]
+CMD ["wait-for-it.sh", "backend:5000", "--timeout=30", "--", "python", "app.py"]
