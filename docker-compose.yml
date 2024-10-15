@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   postgres:
     image: postgres:latest
@@ -12,6 +10,8 @@ services:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+    networks:
+      - default
 
   backend:
     build:
@@ -23,6 +23,8 @@ services:
       - postgres
     ports:
       - "5000:5000"
+    networks:
+      - default
 
   frontend:
     build:
@@ -34,6 +36,12 @@ services:
       - backend
     ports:
       - "8000:8000"
+    networks:
+      - default
 
 volumes:
   postgres_data:
+
+networks:
+  default:
+    driver: bridge

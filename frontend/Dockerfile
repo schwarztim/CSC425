@@ -1,26 +1,25 @@
 FROM python:3.8-slim
 
-# Set the working directory
+# Working directory
 WORKDIR /app
 
-# Install curl to fetch wait-for-it.sh
-RUN apt-get update && apt-get install -y curl
+# Install dependencies
+RUN apt-get update && apt-get install -y curl \
+    && pip install --upgrade pip
 
-# Copy requirements.txt to the working directory
+# Copy requirements and install them
 COPY requirements.txt /app/
+RUN pip install -r requirements.txt
 
-# Install the dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-# Fetch the wait-for-it.sh script and make it executable
+# Fetch wait-for-it.sh
 RUN curl -o /usr/local/bin/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
     && chmod +x /usr/local/bin/wait-for-it.sh
 
-# Copy the rest of the application code
+# Copy the application code
 COPY . /app
 
 # Expose port 8000
 EXPOSE 8000
 
-# Run the Flask application with wait-for-it to ensure the PostgreSQL service is available
+# Run the Flask application with wait-for-it
 CMD ["wait-for-it.sh", "backend:5000", "--", "python", "app.py"]

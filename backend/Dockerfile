@@ -4,20 +4,19 @@ FROM python:3.8-slim
 # Set the working directory
 WORKDIR /app
 
-# Install curl to fetch wait-for-it.sh
-RUN apt-get update && apt-get install -y curl
+# Install dependencies
+RUN apt-get update && apt-get install -y curl \
+    && pip install --upgrade pip
 
-# Copy requirements.txt to the working directory
+# Copy requirements and install them
 COPY requirements.txt /app/
-
-# Install the dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Fetch the wait-for-it.sh script and make it executable
 RUN curl -o /usr/local/bin/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
     && chmod +x /usr/local/bin/wait-for-it.sh
 
-# Copy the rest of the application code
+# Copy the application code
 COPY . /app
 
 # Expose port 5000 for the backend
