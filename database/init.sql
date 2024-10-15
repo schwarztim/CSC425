@@ -1,0 +1,5 @@
+CREATE TABLE bookings (
+    id SERIAL PRIMARY KEY,
+    time_slot VARCHAR(255) UNIQUE NOT NULL
+);
+
