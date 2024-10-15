@@ -23,5 +23,8 @@ COPY . /app
 # Expose port 5000 for the backend
 EXPOSE 5000
 
+# Set environment variables
+ENV DATABASE_URL=postgresql://user:password@postgres:5432/hair_salon
+
 # Run the Flask application with wait-for-it to ensure the PostgreSQL service is available
 CMD ["wait-for-it.sh", "postgres:5432", "--", "python", "app.py"]

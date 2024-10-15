@@ -23,4 +23,4 @@ COPY . /app
 EXPOSE 8000
 
 # Run the Flask application with wait-for-it to ensure the PostgreSQL service is available
-CMD ["wait-for-it.sh", "db:5432", "--", "python", "app.py"]
+CMD ["wait-for-it.sh", "backend:5000", "--", "python", "app.py"]
