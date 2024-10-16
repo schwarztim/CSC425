@@ -91,7 +91,7 @@ resource "docker_container" "postgres_container" {
   }
 }
 
-# Backend container setup with correct DATABASE_URL environment variable
+## Backend container setup with correct DATABASE_URL environment variable
 resource "docker_container" "backend_container" {
   name  = "backend"
   image = docker_image.backend_image.name
