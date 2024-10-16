@@ -5,29 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSC425 Hair Salon</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
-    <h1>Book a Time Slot</h1>
+    <div id="booking-container">
+        <h1>Book Your Appointment</h1>
 
-    <label for="date">Select a date:</label>
-    <input type="date" id="date" name="date" required>
-    <br><br>
+        <label for="date">Select a date:</label>
+        <input type="date" id="date" name="date" required>
 
-    <div id="time-slots">
-        <!-- Time slots will be dynamically added here by JavaScript -->
+        <div id="time-slots">
+            <!-- Time slots will be dynamically added here by JavaScript -->
+        </div>
+
+        <form id="booking-form">
+            <input type="hidden" id="selected-time" name="selected-time" required>
+
+            <label for="name">Enter your name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="phone">Enter your phone number:</label>
+            <input type="tel" id="phone" name="phone" required>
+
+            <button type="submit">Book Appointment</button>
+        </form>
     </div>
-
-    <form id="booking-form">
-        <input type="hidden" id="selected-time" name="selected-time" required>
-        <label for="name">Enter your name:</label>
-        <input type="text" id="name" name="name" required>
-        <br>
-        <label for="phone">Enter your phone number:</label>
-        <input type="tel" id="phone" name="phone" required>
-        <br>
-        <button type="submit">Book</button>
-    </form>
 
     <!-- Link to external JavaScript file -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>

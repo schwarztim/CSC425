@@ -1,16 +1,104 @@
+/* General body styles for a clean layout and theme */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Arial', sans-serif;
+    background-color: #1e9ab0; /* Teal background to match the image */
+    color: #ffffff;
+}
+
+/* Style the booking form container to be centered */
+#booking-container {
+    text-align: center;
+    background-color: #f4f4f4;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+/* Header styles to match the theme */
+h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #ff7f2a; /* Orange that matches the atom circles */
+}
+
+/* Time slots grid */
+#time-slots {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* Two rows with 8 columns max */
+    gap: 10px;
+    justify-items: center;
+    margin-bottom: 20px;
+}
+
+/* Individual time slot style */
 .time-slot {
-    display: inline-block;
-    padding: 10px;
-    margin: 5px;
-    border: 1px solid #000;
+    background-color: #ffffff;
+    border: 2px solid #ff7f2a; /* Match the orange from the atomic theme */
+    padding: 10px 0;
+    width: 80px;
+    text-align: center;
     cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.2s ease;
+    font-weight: bold;
+    color: #333;
+}
+
+.time-slot:hover {
+    background-color: #ff7f2a;
+    color: #ffffff;
 }
 
 .time-slot.booked {
-    background-color: #f00;
+    background-color: #ff7f2a;
+    color: #ffffff;
     cursor: not-allowed;
 }
 
 .time-slot.selected {
-    background-color: #0f0;
+    background-color: #34a852;
+    color: #ffffff;
+}
+
+/* Form styles */
+label, input {
+    display: block;
+    margin: 10px 0;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ff7f2a;
+    border-radius: 8px;
+}
+
+button {
+    background-color: #ff7f2a;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #34a852;
+}
+
+/* Media queries for responsiveness */
+@media screen and (max-width: 768px) {
+    #time-slots {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
