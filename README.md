@@ -8,6 +8,7 @@ This web application allows users to book hair salon appointments, with availabl
 
 - **Frontend**: Built with **Flask**, handling client-side logic for displaying available time slots and submitting booking requests.
 - **Backend**: Built with **Flask**, managing business logic for bookings, connecting to a PostgreSQL database, and enforcing rate limiting.
+- **Rebuild**: I also included redeploy, which takes care of tearing down any containers, networks, storage, and etc to insure that this enviroment is focused on portability.
 
 ## **Running the Program**
 
