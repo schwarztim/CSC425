@@ -1,136 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Hair Salon Booking</title>
-    <script>
-        // Function to disable Sundays and Mondays
-        function disableDays(date) {
-            const day = date.getUTCDay();  // Use UTC day to avoid timezone issues
-            return (day === 0 || day === 1);  // Disable Sunday (0) and Monday (1)
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC425 Hair Salon</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-        // Function to set available time slots (10 AM to 6 PM in 30-minute increments)
-        function setAvailableTimes() {
-            const timeSelect = document.getElementById("time");
-            timeSelect.innerHTML = ""; // Clear existing options
-
-            const startHour = 10;
-            const endHour = 18;
-
-            // Generate 30-minute time slots
-            for (let hour = startHour; hour <= endHour; hour++) {
-                ['00', '30'].forEach(minute => {
-                    const timeOption = document.createElement("option");
-                    const timeString = `${hour.toString().padStart(2, '0')}:${minute}`;
-                    timeOption.value = timeString;
-                    timeOption.text = timeString;
-                    timeSelect.appendChild(timeOption);
-                });
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const dateInput = document.getElementById('date');
-            const today = new Date().toISOString().split('T')[0]; // Get today's date
-
-            dateInput.min = today; // Prevent past dates
-            setAvailableTimes();
-
-            // Filter out Sundays and Mondays, allow today's date if it's a valid day
-            dateInput.addEventListener('input', function () {
-                const selectedDate = new Date(dateInput.value);
-                const day = selectedDate.getUTCDay();
-                if (day === 0 || day === 1) { // Sunday or Monday
-                    alert('Bookings are only allowed Tuesday to Saturday.');
-                    dateInput.value = ""; // Reset the value
-                } else {
-                    // Refresh available times for the selected date
-                    fetchTimes();
-                }
-            });
-
-            // Submit form logic
-            document.getElementById('booking-form').addEventListener('submit', function (event) {
-                event.preventDefault();
-                const selectedDate = document.getElementById('date').value;
-                const selectedTime = document.getElementById('time').value;
-                const name = document.getElementById('name').value;
-                const phoneNumber = document.getElementById('phone').value;
-                const timeSlot = `${selectedDate} ${selectedTime}`;
-
-                // Validate inputs
-                if (!name || !phoneNumber || !selectedTime || !selectedDate) {
-                    alert('Time slot, name, and phone number are required.');
-                    return;
-                }
-
-                // Send booking data to the backend
-                fetch('/book', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        time: timeSlot,
-                        name: name,
-                        phone_number: phoneNumber
-                    })
-                }).then(response => response.json()).then(data => {
-                    alert(data.message || data.error);
-                    if (data.message) {
-                        // Refresh available times after booking
-                        fetchTimes();
-                    }
-                }).catch(error => {
-                    alert('Error booking time');
-                });
-            });
-        });
-
-        // Fetch times that are already booked and disable them
-        function fetchTimes() {
-            const selectedDate = document.getElementById('date').value;
-            if (!selectedDate) return; // Ensure a date is selected
-
-            fetch(`/times?date=${selectedDate}`)
-                .then(response => response.json())
-                .then(bookedTimes => {
-                    const timeSelect = document.getElementById("time");
-                    const options = timeSelect.options;
-
-                    for (let i = 0; i < options.length; i++) {
-                        const optionTime = `${selectedDate} ${options[i].value}`;
-                        options[i].disabled = bookedTimes.includes(optionTime);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching booked times:', error);
-                });
-        }
-    </script>
 </head>
 <body>
     <h1>Book a Time Slot</h1>
 
-    <!-- Date Picker -->
     <label for="date">Select a date:</label>
     <input type="date" id="date" name="date" required>
-    <br>
+    <br><br>
 
-    <!-- Time Slot Selector -->
-    <label for="time">Select a time:</label>
-    <select id="time" name="time" required></select>
-    <br>
+    <div id="time-slots">
+        <!-- Time slots will be dynamically added here by JavaScript -->
+    </div>
 
-    <!-- Booking Form -->
     <form id="booking-form">
+        <input type="hidden" id="selected-time" name="selected-time" required>
         <label for="name">Enter your name:</label>
         <input type="text" id="name" name="name" required>
         <br>
         <label for="phone">Enter your phone number:</label>
         <input type="tel" id="phone" name="phone" required>
         <br>
-        <button type="submit">Book Time</button>
+        <button type="submit">Book</button>
     </form>
+
+    <!-- Link to external JavaScript file -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

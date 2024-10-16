@@ -7,10 +7,6 @@ terraform {
   }
 }
 
-provider "docker" {
-  host = "unix:///var/run/docker.sock"
-}
-
 # Custom network creation to replace Docker Compose network
 resource "docker_network" "csc425_default" {
   name   = "csc425_default"
@@ -50,7 +46,7 @@ resource "docker_image" "frontend_image" {
   keep_locally = false
 }
 
-# PostgreSQL container setup
+# PostgreSQL container setup with correct environment variables
 resource "docker_container" "postgres_container" {
   name  = "postgres_container"
   image = docker_image.postgres_image.name
@@ -61,7 +57,7 @@ resource "docker_container" "postgres_container" {
     external = 5432
   }
 
-  # Environment variables for PostgreSQL
+  # Correct environment variables for PostgreSQL to create the right database and user
   env = [
     "POSTGRES_USER=user",
     "POSTGRES_PASSWORD=password",
@@ -95,7 +91,7 @@ resource "docker_container" "postgres_container" {
   }
 }
 
-# Backend container setup
+# Backend container setup with correct DATABASE_URL environment variable
 resource "docker_container" "backend_container" {
   name  = "backend"
   image = docker_image.backend_image.name
@@ -106,7 +102,7 @@ resource "docker_container" "backend_container" {
     external = 5000
   }
 
-  # Environment variables for backend (linking to PostgreSQL)
+  # Correct DATABASE_URL environment variable to connect to the "hair_salon" database
   env = [
     "DATABASE_URL=postgresql://user:password@${docker_container.postgres_container.name}:5432/hair_salon"
   ]
@@ -139,7 +135,7 @@ resource "docker_container" "frontend_container" {
     external = 8000
   }
 
-  # Environment variables for frontend (linking to backend)
+  # Environment variables for frontend to connect to backend
   env = [
     "BACKEND_URL=http://backend:5000"
   ]

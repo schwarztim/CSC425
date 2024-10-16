@@ -1,0 +1,16 @@
+.time-slot {
+    display: inline-block;
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #000;
+    cursor: pointer;
+}
+
+.time-slot.booked {
+    background-color: #f00;
+    cursor: not-allowed;
+}
+
+.time-slot.selected {
+    background-color: #0f0;
+}
